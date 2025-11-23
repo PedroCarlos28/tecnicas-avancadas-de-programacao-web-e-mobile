@@ -1,0 +1,24 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    git \
+    git-lfs \
+    openjdk-21-jdk \
+    maven \
+    mysql-server \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN echo "CREATE USER 'pedro'@'localhost' IDENTIFIED BY 'q1w2e3r4'; \
+        GRANT ALL PRIVILEGES ON *.* TO 'pedro'@'localhost' WITH GRANT OPTION; \
+        FLUSH PRIVILEGES;" > /tmp/script.sql
+
+RUN service mysql start && \
+    sleep 5 && \
+    mysql -uroot < /tmp/script.sql && \
+    service mysql stop
+
+WORKDIR /workspaces
+
+CMD [ "bash" ]
